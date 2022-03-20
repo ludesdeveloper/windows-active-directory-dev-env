@@ -28,7 +28,7 @@ pulumi stack init
 ```
 pulumi config set aws:region ap-southeast-1
 ```
-6. Change directory to Script
+6. Change directory to script
 ```
 cd script
 ```
