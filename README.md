@@ -32,7 +32,7 @@ cd script
 ```
 7. Generate keypair
 ```
-./windows-keypair.sh
+ssh-keygen -m PEM -f windows-keypair
 ```
 8. Change directory to root folder
 ```
