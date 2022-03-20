@@ -63,6 +63,9 @@ pulumi up --yes
 1. Directory Service
 ![Directory Service](pic/directory-service.png)
 2. Join Domain Result
+```
+systeminfo | findstr "Domain"
+```
 ![windows join domain](pic/windows-join-domain.png)
 ###**Housekeeping**
 1. Destroy your infrastructure
