@@ -1,0 +1,2 @@
+https://github.com/fpco/terraform-aws-foundation/blob/v1.9.16/examples/ad-ec2/main.tf
+systeminfo | findstr /B "Domain"

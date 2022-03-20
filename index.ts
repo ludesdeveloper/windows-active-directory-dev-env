@@ -27,7 +27,7 @@ const gw = new aws.ec2.InternetGateway("gw", {
         Name: "main",
     },
 });
-const routeTable = new aws.ec2.RouteTable("routetable", {
+const routeTable = new aws.ec2.RouteTable("routeTable", {
     vpcId: vpc.id,
     routes: [
         {
@@ -96,9 +96,59 @@ const allowRDP = new aws.ec2.SecurityGroup("allowRDP", {
 const deployer = new aws.ec2.KeyPair("deployer", {
     publicKey: fs.readFileSync('./script/windows-keypair.pub', 'utf8'),
 });
+const foo = new aws.ssm.Document("foo", {
+    content: pulumi.interpolate`  {
+    "schemaVersion": "1.2",
+    "description": "Check ip configuration of a Linux instance.",
+    "parameters": {
+
+    },
+    "runtimeConfig": {
+      "aws:domainJoin": {
+        "properties": [
+          {
+            "directoryId": "${barDirectory.id}",
+            "directoryName": "${barDirectory.name}",
+            "directoryOU": "",
+            "dnsIpAddresses": ["${barDirectory.dnsIpAddresses[0]}", "${barDirectory.dnsIpAddresses[1]}"]
+          }
+        ]
+      }
+    }
+  }
+`,
+    documentType: "Command",
+});
+export const dnsOutput = barDirectory.dnsIpAddresses
+const role = new aws.iam.Role("testRole", {
+    assumeRolePolicy: JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [{
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Sid: "",
+            Principal: {
+                Service: "ec2.amazonaws.com",
+            },
+        }],
+    }),
+    tags: {
+        "tag-key": "tag-value",
+    },
+});
+const policyAttach1 = new aws.iam.PolicyAttachment("policyAttach1", {
+    roles: [role.name],
+    policyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+});
+const policyAttach2 = new aws.iam.PolicyAttachment("policyAttach2", {
+    roles: [role.name],
+    policyArn: "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess",
+});
+const instanceProfile = new aws.iam.InstanceProfile("instanceProfile", { role: role.name });
 const server = new aws.ec2.Instance("server", {
     ami: os.then(os => os.id),
     instanceType: "t2.large",
+    iamInstanceProfile: instanceProfile.id,
     vpcSecurityGroupIds: [allowRDP.id],
     subnetId: subnet1a.id,
     associatePublicIpAddress: true,
@@ -106,4 +156,8 @@ const server = new aws.ec2.Instance("server", {
     tags: {
         Name: "HelloWorld",
     },
+});
+const ssmAssociation = new aws.ssm.Association("ssmAssociation", {
+    instanceId: server.id,
+    name: foo.id,
 });
