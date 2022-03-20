@@ -1,5 +1,9 @@
 # **Windows Dev Environment**
 > Windows Development Environment with AWS Active Directory Service and EC2 Windows Auto Join Domain
+<p align="center">
+<img src="pic/ludes.png" width="500">
+</p>
+
 ### **Diagram**
 ![Diagram](pic/diagram.png)
 ### **Requirement**
