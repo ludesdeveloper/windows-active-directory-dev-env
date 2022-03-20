@@ -26,7 +26,11 @@ pulumi stack init
 ```
 pulumi config set aws:region ap-southeast-1
 ```
-6. Create our infrastructure
+6. Generate keypair
+```
+./script/windows-keypair.sh
+```
+7. Create our infrastructure
 ```
 pulumi up --yes
 ```
