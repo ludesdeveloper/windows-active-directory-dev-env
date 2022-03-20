@@ -119,7 +119,6 @@ const foo = new aws.ssm.Document("foo", {
 `,
     documentType: "Command",
 });
-export const dnsOutput = barDirectory.dnsIpAddresses
 const role = new aws.iam.Role("testRole", {
     assumeRolePolicy: JSON.stringify({
         Version: "2012-10-17",
