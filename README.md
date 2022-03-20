@@ -10,15 +10,19 @@
 ```
 git clone https://github.com/ludesdeveloper/windows-active-directory-dev-env.git
 ```
-2. Install the required Node.js packages
+2. Change directory
+```
+cd windows-active-directory-dev-env
+```
+3. Install the required Node.js packages
 ```
 npm install
 ```
-3. Create a new stack, which is an isolated deployment target for this example
+4. Create a new stack, which is an isolated deployment target for this example
 ```
 pulumi stack init
 ```
-4. Set the required configuration variables for this program
+5. Set the required configuration variables for this program
 ```
 pulumi config set aws:region ap-southeast-1
 ```
