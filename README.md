@@ -26,3 +26,7 @@ pulumi stack init
 ```
 pulumi config set aws:region ap-southeast-1
 ```
+6. Create our infrastructure
+```
+pulumi up --yes
+```
