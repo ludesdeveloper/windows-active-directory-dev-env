@@ -26,13 +26,17 @@ pulumi stack init
 ```
 pulumi config set aws:region ap-southeast-1
 ```
-6. Change Directory to Script
+6. Change directory to Script
 ```
 cd script
 ```
 7. Generate keypair
 ```
 ./windows-keypair.sh
+```
+8. Change directory to root folder
+```
+cd ..
 ```
 8. Create our infrastructure
 ```
