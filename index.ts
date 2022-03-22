@@ -4,6 +4,7 @@ import * as fs from "fs";
 
 const vpc = new aws.ec2.Vpc("vpc", {
     cidrBlock: "10.0.0.0/16",
+    enableDnsHostnames: true,
 });
 const subnet1a = new aws.ec2.Subnet("subnet1a", {
     vpcId: vpc.id,
@@ -58,6 +59,14 @@ const barDirectory = new aws.directoryservice.Directory("barDirectory", {
     tags: {
         Project: "foo",
     },
+});
+const route53Private = new aws.route53.Zone("private", {
+    comment: "",
+    name: "corp.notexample.com",
+    vpcs: [{
+        vpcId: vpc.id,
+        vpcRegion: "ap-southeast-1",
+    }],
 });
 const os = aws.ec2.getAmi({
     mostRecent: true,
@@ -144,19 +153,24 @@ const policyAttach2 = new aws.iam.PolicyAttachment("policyAttach2", {
     policyArn: "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess",
 });
 const instanceProfile = new aws.iam.InstanceProfile("instanceProfile", { role: role.name });
-const server = new aws.ec2.Instance("server", {
-    ami: os.then(os => os.id),
-    instanceType: "t2.large",
-    iamInstanceProfile: instanceProfile.id,
-    vpcSecurityGroupIds: [allowRDP.id],
-    subnetId: subnet1a.id,
-    associatePublicIpAddress: true,
-    keyName: deployer.id,
-    tags: {
-        Name: "HelloWorld",
-    },
-});
-const ssmAssociation = new aws.ssm.Association("ssmAssociation", {
-    instanceId: server.id,
-    name: foo.id,
-});
+for (let index = 0; index < 5; index++) {
+    const server = new aws.ec2.Instance("server" + index.toString(), {
+        ami: os.then(os => os.id),
+        instanceType: "t2.large",
+        iamInstanceProfile: instanceProfile.id,
+        vpcSecurityGroupIds: [allowRDP.id],
+        subnetId: subnet1a.id,
+        associatePublicIpAddress: true,
+        keyName: deployer.id,
+        rootBlockDevice: {
+            volumeSize: 60,
+        },
+        tags: {
+            Name: "server" + index.toString(),
+        },
+    });
+    const ssmAssociation = new aws.ssm.Association("ssmAssociation" + index.toString(), {
+        instanceId: server.id,
+        name: foo.id,
+    });
+}
